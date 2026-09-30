@@ -175,7 +175,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--led);outline-offset
       </div>
     </div>
     <div class="items" id="items"></div>
-    <p class="notes">Every figure starts from January 2025, the month of the inauguration. Government price data is monthly, so there is no figure for January 20 itself. Gas is the exception: AAA publishes it weekly.</p>
+    <p class="notes">Every figure starts from January 2025, the month of the inauguration. Government price data is monthly, so there is no figure for January 20 itself. Gas is the exception: it loads from NationalGasAverage.com, which updates daily from the EIA's weekly survey and uses January 20, 2025 as its starting point.</p>
   </section>
 
   <section class="donate">
@@ -193,9 +193,11 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--led);outline-offset
 /* ====== Edit these numbers to update the site ====== */
 const UPDATED = "September 30, 2026";
 
+// Gas loads live from NationalGasAverage.com each visit; these numbers are the fallback if that fails
+const GAS_DATA_URL = "https://nationalgasaverage.com/data.json";
 const GAS = {
-  now: 4.48,  nowDate: "AAA, Sept. 24, 2026",
-  then: 3.13, thenDate: "AAA, Jan. 23, 2025",
+  now: 4.465,  nowDate: "EIA, week of Sep 28, 2026",
+  then: 3.113, thenDate: "AAA, Jan. 20, 2025 (interpolated)",
   tankGallons: 15
 };
 
@@ -203,7 +205,7 @@ const GAS = {
 // since: false = latest 12-month change (dashed bar)
 const ITEMS = [
   { icon:"health", name:"Health insurance (ACA plans)", sign:{ head:"Health insurance, ACA plans" }, then:"", now:"", pct:58, since:true, basis:"Premiums paid after subsidies, 2025 plan year to 2026" },
-  { icon:"pump", name:"Gasoline", sign:{ head:"Regular unleaded", now:GAS.now, then:GAS.then, fmt:"usd", unit:"gallon", nowLabel:"Today", nowSub:GAS.nowDate, thenLabel:"Inauguration week", thenSub:GAS.thenDate, extra:(n,t)=>`Filling a ${GAS.tankGallons}-gallon tank: <b>$${money(t*GAS.tankGallons)}</b> then, <b>$${money(n*GAS.tankGallons)}</b> now. That\'s <b>$${money((n-t)*GAS.tankGallons)}</b> more per fill-up.` }, then:"$3.13", now:"$4.48 /gal", pct:43, since:true, basis:"Jan. 2025 to Sept. 2026" },
+  { icon:"pump", name:"Gasoline", sign:{ head:"Regular unleaded", now:GAS.now, then:GAS.then, fmt:"usd3", unit:"gallon", nowLabel:"Latest", nowSub:GAS.nowDate, thenLabel:"Inauguration Day", thenSub:GAS.thenDate, extra:(n,t)=>`Filling a ${GAS.tankGallons}-gallon tank: <b>$${money(t*GAS.tankGallons)}</b> then, <b>$${money(n*GAS.tankGallons)}</b> now. That's <b>$${money((n-t)*GAS.tankGallons)}</b> more per fill-up.` }, then:"$"+GAS.then.toFixed(3), now:"$"+GAS.now.toFixed(3)+" /gal", pct:+((GAS.now-GAS.then)/GAS.then*100).toFixed(1), since:true, basis:"Jan. 20, 2025 to Sept. 2026" },
   { icon:"coffee", name:"Ground coffee", sign:{ head:"Ground coffee", now:9.30, then:7.02, fmt:"usd", unit:"pound", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025" }, then:"$7.02", now:"$9.30 /lb", pct:32.5, since:true, basis:"Jan. 2025 to Aug. 2026" },
   { icon:"steak", name:"Ground beef", sign:{ head:"Ground beef", now:6.92, then:5.55, fmt:"usd", unit:"pound", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025", extra:(n,t)=>`A 3-pound family pack: <b>$${money(t*3)}</b> then, <b>$${money(n*3)}</b> now.` }, then:"$5.55", now:"$6.92 /lb", pct:24.9, since:true, basis:"Jan. 2025 to Aug. 2026" },
   { icon:"candy", name:"Candy and chocolate", sign:{ head:"Candy and chocolate" }, then:"", now:"", pct:10.8, since:true, basis:"Consumer price index, Jan. 2025 to Aug. 2026" },
@@ -215,7 +217,7 @@ const ITEMS = [
 ];
 
 const SOURCES = [
-  ["AAA national gas price averages", "https://gasprices.aaa.com/"],
+  ["Gas: NationalGasAverage.com (EIA weekly retail prices; Jan. 20, 2025 baseline from AAA)", "https://nationalgasaverage.com/"],
   ["BLS average price: ground beef (FRED APU0000703112)", "https://fred.stlouisfed.org/series/APU0000703112"],
   ["BLS average price: ground coffee (FRED APU0000717311)", "https://fred.stlouisfed.org/series/APU0000717311"],
   ["BLS average price: electricity (FRED APU000072610)", "https://fred.stlouisfed.org/series/APU000072610"],
@@ -259,93 +261,126 @@ const now = new Date();
 const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
 $("dayCount").textContent = (Math.floor((today - start)/86400000) + 1).toLocaleString();
 
-// Sign: rotates daily through items up 20% or more (add #sign=1, #sign=2, ... to the URL to preview)
-const SIGN_MIN = 20;
-const POOL = ITEMS.filter(i => i.pct >= SIGN_MIN);
-const val = (v,f) => f==="cents" ? `${v.toFixed(1)}<span class="u">¢</span>` : `<span class="u">$</span>${money(v)}`;
-const plain = (v,f) => f==="cents" ? `${v.toFixed(1)}¢` : `$${money(v)}`;
-const cpi = ITEMS.find(i => i.icon === "cart");
-const daysIn = Math.floor((today - start)/86400000);
-const hashPick = parseInt((location.hash.match(/sign=(\d+)/)||[])[1], 10);
-// The sign starts on SIGN_START_ITEM on SIGN_START_DATE, then moves to the next item each day
-const SIGN_START_ITEM = "Ground beef";
-const SIGN_START_DATE = Date.UTC(2026, 8, 30); // September 30, 2026 (months count from 0)
-const startIdx = Math.max(0, POOL.findIndex(i => i.name === SIGN_START_ITEM));
-const daysSinceStart = Math.floor((today - SIGN_START_DATE) / 86400000);
-const idx = hashPick >= 1 && hashPick <= POOL.length ? hashPick - 1 : (((startIdx + daysSinceStart) % POOL.length) + POOL.length) % POOL.length;
-const pick = POOL[idx], sg = pick.sign || {};
-$("signHead").textContent = sg.head || pick.name;
-$("tank").innerHTML = "";
-if (sg.now != null) {
-  const d = sg.now - sg.then;
-  $("r1Label").textContent = sg.nowLabel || "Latest";
-  $("r1Sub").textContent = sg.nowSub || "";
-  $("r1Val").innerHTML = val(sg.now, sg.fmt);
-  $("r2Label").textContent = sg.thenLabel || "January 2025";
-  $("r2Sub").textContent = sg.thenSub || "";
-  $("r2Val").innerHTML = val(sg.then, sg.fmt);
-  $("footLabel").textContent = `Change per ${sg.unit}`;
-  $("footVal").textContent = `+${plain(d, sg.fmt)} (+${pick.pct}%)`;
-  if (sg.extra) $("tank").innerHTML = sg.extra(sg.now, sg.then);
-  $("signText").textContent = `${sg.head || pick.name}: ${plain(sg.now, sg.fmt)} per ${sg.unit} now, up from ${plain(sg.then, sg.fmt)} in January 2025, an increase of ${pick.pct} percent.`;
-} else {
-  $("r1Label").textContent = "Since January 2025";
-  $("r1Sub").textContent = pick.basis;
-  $("r1Val").innerHTML = `+${pick.pct}<span class="u">%</span>`;
-  if (pick === cpi) {
-    $("row2").style.display = "none";
-    $("footLabel").textContent = "All consumer prices combined";
-    $("footVal").textContent = "";
+function renderAll() {
+  // Sign: rotates daily through items up 20% or more (add #sign=1, #sign=2, ... to the URL to preview)
+  const SIGN_MIN = 20;
+  const POOL = ITEMS.filter(i => i.pct >= SIGN_MIN);
+  const val = (v,f) => f==="cents" ? `${v.toFixed(1)}<span class="u">¢</span>` : `<span class="u">$</span>${f==="usd3" ? v.toFixed(3) : money(v)}`;
+  const plain = (v,f) => f==="cents" ? `${v.toFixed(1)}¢` : `$${f==="usd3" ? v.toFixed(3) : money(v)}`;
+  const cpi = ITEMS.find(i => i.icon === "cart");
+  const daysIn = Math.floor((today - start)/86400000);
+  const hashPick = parseInt((location.hash.match(/sign=(\d+)/)||[])[1], 10);
+  // The sign starts on SIGN_START_ITEM on SIGN_START_DATE, then moves to the next item each day
+  const SIGN_START_ITEM = "Ground beef";
+  const SIGN_START_DATE = Date.UTC(2026, 8, 30); // September 30, 2026 (months count from 0)
+  const startIdx = Math.max(0, POOL.findIndex(i => i.name === SIGN_START_ITEM));
+  const daysSinceStart = Math.floor((today - SIGN_START_DATE) / 86400000);
+  const idx = hashPick >= 1 && hashPick <= POOL.length ? hashPick - 1 : (((startIdx + daysSinceStart) % POOL.length) + POOL.length) % POOL.length;
+  const pick = POOL[idx], sg = pick.sign || {};
+  $("signHead").textContent = sg.head || pick.name;
+  $("tank").innerHTML = "";
+  $("row2").style.display = "";
+  if (sg.now != null) {
+    const d = sg.now - sg.then;
+    $("r1Label").textContent = sg.nowLabel || "Latest";
+    $("r1Sub").textContent = sg.nowSub || "";
+    $("r1Val").innerHTML = val(sg.now, sg.fmt);
+    $("r2Label").textContent = sg.thenLabel || "January 2025";
+    $("r2Sub").textContent = sg.thenSub || "";
+    $("r2Val").innerHTML = val(sg.then, sg.fmt);
+    $("footLabel").textContent = `Change per ${sg.unit}`;
+    $("footVal").textContent = `+${plain(d, sg.fmt)} (+${pick.pct}%)`;
+    if (sg.extra) $("tank").innerHTML = sg.extra(sg.now, sg.then);
+    $("signText").textContent = `${sg.head || pick.name}: ${plain(sg.now, sg.fmt)} per ${sg.unit} now, up from ${plain(sg.then, sg.fmt)} in January 2025, an increase of ${pick.pct} percent.`;
   } else {
-    $("r2Label").textContent = "Overall inflation";
-    $("r2Sub").textContent = "Same period";
-    $("r2Val").innerHTML = `+${cpi.pct}<span class="u">%</span>`;
-    $("footLabel").textContent = "Compared with overall inflation";
-    $("footVal").textContent = `${(pick.pct / cpi.pct).toFixed(1)}× as fast`;
+    $("r1Label").textContent = "Since January 2025";
+    $("r1Sub").textContent = pick.basis;
+    $("r1Val").innerHTML = `+${pick.pct}<span class="u">%</span>`;
+    if (pick === cpi) {
+      $("row2").style.display = "none";
+      $("footLabel").textContent = "All consumer prices combined";
+      $("footVal").textContent = "";
+    } else {
+      $("r2Label").textContent = "Overall inflation";
+      $("r2Sub").textContent = "Same period";
+      $("r2Val").innerHTML = `+${cpi.pct}<span class="u">%</span>`;
+      $("footLabel").textContent = "Compared with overall inflation";
+      $("footVal").textContent = `${(pick.pct / cpi.pct).toFixed(1)}× as fast`;
+    }
+    $("signText").textContent = `${sg.head || pick.name} is up ${pick.pct} percent since January 2025, compared with ${cpi.pct} percent overall inflation.`;
   }
-  $("signText").textContent = `${sg.head || pick.name} is up ${pick.pct} percent since January 2025, compared with ${cpi.pct} percent overall inflation.`;
+  const nxt = POOL[(idx + 1) % POOL.length];
+  $("nextSign").textContent = `Tomorrow on the sign: ${nxt.name}`;
+
+  // Icons (simple line drawings, edit or swap freely)
+  const ICONS = {
+    health:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/>',
+    pump:'<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12M7 8h4"/><path d="M14 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/>',
+    coffee:'<path d="M4 9h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/>',
+    steak:'<path d="M15.5 4C19 4 21 6.5 21 10c0 5-5 10-11 10-4 0-7-2-7-5 0-3 2.5-4 4.5-5.5C10 7.5 11.5 4 15.5 4z"/><circle cx="15" cy="10" r="2"/>',
+    candy:'<circle cx="12" cy="12" r="4"/><path d="M8 12 3 8v8zM16 12l5-4v8z"/>',
+    flame:'<path d="M12 3c1 3 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.7 1 2.5 2 3 .5-2.5 0-5.5.5-8z"/>',
+    bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+    house:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',
+    burger:'<path d="M4 10c0-3.3 3.6-6 8-6s8 2.7 8 6z"/><path d="M3 13.5h18"/><path d="M4 17h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
+    cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11l2-8H6.5"/>'
+  };
+  const icon = k => ICONS[k] ? `<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[k]}</svg></span>` : "";
+
+  // Items
+  const max = Math.max(...ITEMS.map(i => i.pct));
+  const list = $("items");
+  list.innerHTML = "";
+  ITEMS.slice().sort((a,b) => b.pct - a.pct).forEach(i => {
+    const row = document.createElement("div");
+    const tier = i.pct > 20 ? "t3" : i.pct > 10 ? "t2" : "t1";
+    row.className = "item " + tier + (i.since ? "" : " yoy");
+    const prices = i.then && i.now ? `${i.then} → <b>${i.now}</b>` : (i.now ? `Now <b>${i.now}</b>` : "");
+    row.innerHTML = `
+      <div class="name">${icon(i.icon)}<span>${i.name}<span class="basis">${i.basis}</span></span></div>
+      <div class="prices">${prices}</div>
+      <div class="track" aria-hidden="true"><div class="fill" data-w="${(i.pct/max*100).toFixed(1)}"></div></div>
+      <div class="pct">+${i.pct}%</div>`;
+    list.appendChild(row);
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%");
+  }));
+
+  // Ticker (list repeated twice so the scroll loops seamlessly)
+  const tickItems = ITEMS.slice().sort((a,b) => b.pct - a.pct).map(i =>
+    `<span class="tick">${i.name}${i.now ? ` <b>${i.now}</b>` : ""} <em>▲ ${i.pct}%</em></span>`).join("");
+  $("ticker").innerHTML = tickItems + tickItems.replace(/class="tick"/g, 'class="tick" aria-hidden="true"');
 }
-const nxt = POOL[(idx + 1) % POOL.length];
-$("nextSign").textContent = `Tomorrow on the sign: ${nxt.name}`;
+renderAll();
 
-// Icons (simple line drawings, edit or swap freely)
-const ICONS = {
-  health:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/>',
-  pump:'<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12M7 8h4"/><path d="M14 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/>',
-  coffee:'<path d="M4 9h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/>',
-  steak:'<path d="M15.5 4C19 4 21 6.5 21 10c0 5-5 10-11 10-4 0-7-2-7-5 0-3 2.5-4 4.5-5.5C10 7.5 11.5 4 15.5 4z"/><circle cx="15" cy="10" r="2"/>',
-  candy:'<circle cx="12" cy="12" r="4"/><path d="M8 12 3 8v8zM16 12l5-4v8z"/>',
-  flame:'<path d="M12 3c1 3 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.7 1 2.5 2 3 .5-2.5 0-5.5.5-8z"/>',
-  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
-  house:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',
-  burger:'<path d="M4 10c0-3.3 3.6-6 8-6s8 2.7 8 6z"/><path d="M3 13.5h18"/><path d="M4 17h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
-  cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11l2-8H6.5"/>'
-};
-const icon = k => ICONS[k] ? `<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[k]}</svg></span>` : "";
-
-// Items
-const max = Math.max(...ITEMS.map(i => i.pct));
-const list = $("items");
-ITEMS.slice().sort((a,b) => b.pct - a.pct).forEach(i => {
-  const row = document.createElement("div");
-  const tier = i.pct > 20 ? "t3" : i.pct > 10 ? "t2" : "t1";
-  row.className = "item " + tier + (i.since ? "" : " yoy");
-  const prices = i.then && i.now ? `${i.then} → <b>${i.now}</b>` : (i.now ? `Now <b>${i.now}</b>` : "");
-  row.innerHTML = `
-    <div class="name">${icon(i.icon)}<span>${i.name}<span class="basis">${i.basis}</span></span></div>
-    <div class="prices">${prices}</div>
-    <div class="track" aria-hidden="true"><div class="fill" data-w="${(i.pct/max*100).toFixed(1)}"></div></div>
-    <div class="pct">+${i.pct}%</div>`;
-  list.appendChild(row);
-});
-requestAnimationFrame(() => requestAnimationFrame(() => {
-  document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%");
-}));
-
-// Ticker (list repeated twice so the scroll loops seamlessly)
-const tickItems = ITEMS.slice().sort((a,b) => b.pct - a.pct).map(i =>
-  `<span class="tick">${i.name}${i.now ? ` <b>${i.now}</b>` : ""} <em>▲ ${i.pct}%</em></span>`).join("");
-$("ticker").innerHTML = tickItems + tickItems.replace(/class="tick"/g, 'class="tick" aria-hidden="true"');
+// Live gas price from NationalGasAverage.com (falls back to the numbers above if it can't load)
+function applyGas(d) {
+  const g = d && Array.isArray(d.grades) && d.grades.find(x => x.key === "regular");
+  if (!g || typeof g.price !== "number") return false;
+  GAS.now = g.price;
+  if (typeof g.yearAgo === "number") GAS.then = g.yearAgo;
+  const dt = new Date((g.period || d.asOf) + "T12:00:00");
+  if (!isNaN(dt)) {
+    GAS.nowDate = "EIA, week of " + dt.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+  }
+  const item = ITEMS.find(i => i.icon === "pump");
+  item.sign.now = GAS.now; item.sign.then = GAS.then; item.sign.nowSub = GAS.nowDate;
+  item.then = "$" + GAS.then.toFixed(3);
+  item.now = "$" + GAS.now.toFixed(3) + " /gal";
+  item.pct = +((GAS.now - GAS.then) / GAS.then * 100).toFixed(1);
+  if (!isNaN(dt)) item.basis = "Jan. 20, 2025 to " + dt.toLocaleDateString("en-US", { month:"short", year:"numeric" });
+  return true;
+}
+(async () => {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch(GAS_DATA_URL, { cache: "no-store", signal: ctrl.signal });
+    clearTimeout(timer);
+    if (res.ok && applyGas(await res.json())) renderAll();
+  } catch (e) { /* keep the fallback numbers */ }
+})();
 
 // Sources
 const ul = $("sources");
