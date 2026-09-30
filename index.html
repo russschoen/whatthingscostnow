@@ -191,7 +191,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--led);outline-offset
 
 <script>
 /* ====== Edit these numbers to update the site ====== */
-const UPDATED = "September 25, 2026";
+const UPDATED = "September 30, 2026";
 
 const GAS = {
   now: 4.48,  nowDate: "AAA, Sept. 24, 2026",
@@ -269,7 +269,7 @@ const daysIn = Math.floor((today - start)/86400000);
 const hashPick = parseInt((location.hash.match(/sign=(\d+)/)||[])[1], 10);
 // The sign starts on SIGN_START_ITEM on SIGN_START_DATE, then moves to the next item each day
 const SIGN_START_ITEM = "Ground beef";
-const SIGN_START_DATE = Date.UTC(2026, 8, 25); // September 25, 2026 (months count from 0)
+const SIGN_START_DATE = Date.UTC(2026, 8, 30); // September 30, 2026 (months count from 0)
 const startIdx = Math.max(0, POOL.findIndex(i => i.name === SIGN_START_ITEM));
 const daysSinceStart = Math.floor((today - SIGN_START_DATE) / 86400000);
 const idx = hashPick >= 1 && hashPick <= POOL.length ? hashPick - 1 : (((startIdx + daysSinceStart) % POOL.length) + POOL.length) % POOL.length;
