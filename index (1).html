@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What Things Cost Now | Prices since Jan. 20, 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#E8ECF0; --paper:#F7F9FB; --ink:#18212C; --muted:#5A6675; --line:#C9D1DA;
+  --up:#C23A22; --up-soft:#EFC9BF; --t1:#F2A594; --t2:#DB5A3F; --t3:#9C2210; --yoy:#8A96A5;
+  --sign:#1C2530; --sign-edge:#2E3A48; --led:#FFB32C; --led-dim:#6B5320;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121820; --paper:#1A222C; --ink:#E6EBF0; --muted:#98A4B3; --line:#2C3743;
+    --up:#F0674C; --up-soft:#4A2A24; --t1:#F7B8A8; --t2:#E8664B; --t3:#B5301A; --yoy:#66727F; --sign:#0C1117; --sign-edge:#27313C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121820; --paper:#1A222C; --ink:#E6EBF0; --muted:#98A4B3; --line:#2C3743;
+  --up:#F0674C; --up-soft:#4A2A24; --t1:#F7B8A8; --t2:#E8664B; --t3:#B5301A; --yoy:#66727F; --sign:#0C1117; --sign-edge:#27313C;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 22px}
+
+/* top bar */
+.bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:18px 0;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.05;letter-spacing:.01em}
+.updated{color:var(--muted);font-size:.9rem}
+.bar-right{display:flex;align-items:center;gap:14px}
+.theme-btn{display:inline-flex;align-items:center;gap:6px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font:500 .85rem var(--body);cursor:pointer}
+.theme-btn:hover{border-color:var(--muted)}
+.theme-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ticker */
+.ticker{background:var(--sign);color:#E2E8EE;overflow:hidden;white-space:nowrap;border-bottom:3px solid var(--led)}
+.ticker-track{display:inline-flex;padding:10px 0;animation:tick 60s linear infinite}
+.ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
+.tick{display:inline-flex;align-items:baseline;gap:8px;padding:0 26px;font-family:var(--display);font-size:1.1rem;border-right:1px solid #334252}
+.tick b{color:var(--led);font-weight:600;font-variant-numeric:tabular-nums}
+.tick em{font-style:normal;color:#FF8A70;font-weight:700;font-variant-numeric:tabular-nums}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker{overflow-x:auto}.ticker-track{animation:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr minmax(300px,400px);gap:48px;align-items:center;padding:56px 0 64px}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,6vw,4.4rem);line-height:.98;margin:0 0 20px;letter-spacing:-.005em}
+.hero p{margin:0 0 14px;max-width:34em;color:var(--muted)}
+.day{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--muted);margin-top:2px}
+.day strong{color:var(--up)}
+
+/* the price sign */
+.sign{background:var(--sign);border:6px solid var(--sign-edge);border-radius:14px;padding:22px 24px 18px;color:#fff;box-shadow:0 24px 50px -24px rgba(10,20,30,.55)}
+.sign-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--display);font-size:1.05rem;color:#C9D3DD;border-bottom:1px solid #334252;padding-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
+.row + .row{border-top:1px solid #334252}
+.row-label{font-family:var(--display);font-size:1.15rem;line-height:1.15;color:#E2E8EE}
+.row-label small{display:block;font-size:.9rem;color:#8FA0B1;font-family:var(--body)}
+.led{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--led);text-shadow:0 0 14px rgba(255,179,44,.55);line-height:1;position:relative}
+.led::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,transparent 55%,rgba(28,37,48,.55) 56%) 0 0/4px 4px;pointer-events:none}
+.led sup{font-size:.42em;vertical-align:top;position:relative;top:.18em;margin-left:2px}
+.led.big{font-size:clamp(4.4rem,11vw,6.2rem)}
+.led.small{font-size:2.9rem;color:#D9A240;text-shadow:none}
+.sign-foot{display:flex;justify-content:space-between;gap:10px;margin-top:6px;padding-top:12px;border-top:1px solid #334252;font-size:.95rem;color:#C9D3DD}
+.sign-foot b{color:#FF8A70;font-weight:600}
+.tank{margin-top:16px;font-size:.98rem;color:var(--muted)}
+.tank b{color:var(--ink)}
+.tank:empty{display:none}
+.next{margin-top:10px;font-size:.88rem;color:var(--muted)}
+.led .u{font-size:.55em;vertical-align:.55em;margin:0 2px}
+
+/* list */
+.list-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.list-head h2{font-family:var(--display);font-weight:700;font-size:2.2rem;margin:0;line-height:1}
+.legend{display:flex;gap:18px;font-size:.88rem;color:var(--muted);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:22px;height:8px;border-radius:2px;background:var(--up)}
+.sw.t1{background:var(--t1)}.sw.t2{background:var(--t2)}.sw.t3{background:var(--t3)}
+.item.t1 .fill{background:var(--t1)}.item.t2 .fill{background:var(--t2)}.item.t3 .fill{background:var(--t3)}
+.sw.yoy{background:repeating-linear-gradient(90deg,var(--up) 0 4px,transparent 4px 7px)}
+.items{background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.item{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(130px,1fr) 2fr 84px;gap:18px;align-items:center;padding:18px 22px}
+.item + .item{border-top:1px solid var(--line)}
+.name{display:flex;align-items:center;gap:14px;font-weight:600;font-size:1.05rem;line-height:1.25}
+.ico{flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:var(--bg);color:var(--up);display:grid;place-items:center}
+.ico svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.basis{display:block;font-weight:400;font-size:.85rem;color:var(--muted);margin-top:2px}
+.prices{font-variant-numeric:tabular-nums;font-size:1rem;color:var(--muted);white-space:nowrap}
+.prices b{color:var(--ink);font-weight:600}
+.track{height:12px;background:var(--bg);border-radius:3px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--up);border-radius:3px;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.item.yoy .fill{background:repeating-linear-gradient(90deg,var(--up) 0 6px,transparent 6px 10px)}
+.pct{font-family:var(--display);font-weight:700;font-size:1.75rem;text-align:right;color:var(--up);font-variant-numeric:tabular-nums}
+
+.notes{margin:18px 0 0;color:var(--muted);font-size:.9rem;max-width:62em}
+
+/* donate */
+.donate{margin:56px 0 0;padding:28px;background:var(--paper);border:1px solid var(--line);border-radius:6px;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.donate p{margin:0;flex:1 1 320px;color:var(--muted);font-size:.98rem;max-width:40em}
+.venmo{display:inline-flex;align-items:center;gap:8px;background:#008CFF;color:#fff;text-decoration:none;font-family:var(--display);font-weight:600;font-size:1.2rem;padding:12px 24px;border-radius:999px;white-space:nowrap}
+.venmo:hover{background:#0074d4}
+
+/* sources */
+.sources{margin:64px 0 0;padding:28px 0 44px;border-top:1px solid var(--line)}
+.sources h2{font-family:var(--display);font-size:1.5rem;margin:0 0 12px}
+.sources ul{margin:0;padding-left:20px;columns:2;column-gap:40px;font-size:.92rem;color:var(--muted)}
+.sources li{margin-bottom:6px;break-inside:avoid}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:34px;padding:36px 0 44px}
+  .item{grid-template-columns:1fr auto;gap:8px 14px;padding:16px 16px}
+  .prices{grid-column:1 / -1;order:3}
+  .track{grid-column:1 / -1;order:4}
+  .pct{order:2}
+  .sources ul{columns:1}
+}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="ticker" aria-label="Price changes since January 2025"><div class="ticker-track" id="ticker"></div></div>
+<div class="wrap">
+  <header class="bar">
+    <div class="brand-block">
+      <div class="brand">Since Jan. 20th, 2025</div>
+      <div class="day">Today is day <strong id="dayCount">—</strong> since the inauguration</div>
+    </div>
+    <div class="bar-right"><div class="updated" id="updated"></div><button class="theme-btn" id="themeBtn" type="button"></button></div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>What everyday things cost now, compared with inauguration day</h1>
+    </div>
+
+    <div>
+      <div class="sign" role="img" aria-labelledby="signText">
+        <span id="signText" hidden></span>
+        <div class="sign-head"><span id="signHead"></span><span>U.S. average</span></div>
+        <div class="row">
+          <div class="row-label"><span id="r1Label"></span><small id="r1Sub"></small></div>
+          <div class="led big" id="r1Val"></div>
+        </div>
+        <div class="row" id="row2">
+          <div class="row-label"><span id="r2Label"></span><small id="r2Sub"></small></div>
+          <div class="led small" id="r2Val"></div>
+        </div>
+        <div class="sign-foot"><span id="footLabel"></span><b id="footVal"></b></div>
+      </div>
+      <div class="tank" id="tank"></div>
+      <div class="next" id="nextSign"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="list-head">
+      <h2>Ten categories</h2>
+      <div class="legend">
+        <span><i class="sw t1"></i>Up to 10%</span>
+        <span><i class="sw t2"></i>10.1–20%</span>
+        <span><i class="sw t3"></i>Over 20%</span>
+      </div>
+    </div>
+    <div class="items" id="items"></div>
+    <p class="notes">Every figure starts from January 2025, the month of the inauguration. Government price data is monthly, so there is no figure for January 20 itself. Gas is the exception: AAA publishes it weekly.</p>
+  </section>
+
+  <section class="donate">
+    <a class="venmo" href="https://venmo.com/russschoen?txn=pay&amount=1&note=Supporting%20this%20site%20and%20our%20ever-rising%20health%20insurance%20premiums" target="_blank" rel="noopener">💙 Donate $1 via Venmo</a>
+    <p>This site is free to use. If it's useful to you, a $1 donation helps cover the cost of running it — and our ever-rising health insurance premiums. Genuinely appreciated, never required.</p>
+  </section>
+
+  <footer class="sources">
+    <h2>Sources</h2>
+    <ul id="sources"></ul>
+  </footer>
+</div>
+
+<script>
+/* ====== Edit these numbers to update the site ====== */
+const UPDATED = "September 25, 2026";
+
+const GAS = {
+  now: 4.48,  nowDate: "AAA, Sept. 24, 2026",
+  then: 3.13, thenDate: "AAA, Jan. 23, 2025",
+  tankGallons: 15
+};
+
+// since: true  = measured from January 2025 (solid bar)
+// since: false = latest 12-month change (dashed bar)
+const ITEMS = [
+  { icon:"health", name:"Health insurance (ACA plans)", sign:{ head:"Health insurance, ACA plans" }, then:"", now:"", pct:58, since:true, basis:"Premiums paid after subsidies, 2025 plan year to 2026" },
+  { icon:"pump", name:"Gasoline", sign:{ head:"Regular unleaded", now:GAS.now, then:GAS.then, fmt:"usd", unit:"gallon", nowLabel:"Today", nowSub:GAS.nowDate, thenLabel:"Inauguration week", thenSub:GAS.thenDate, extra:(n,t)=>`Filling a ${GAS.tankGallons}-gallon tank: <b>$${money(t*GAS.tankGallons)}</b> then, <b>$${money(n*GAS.tankGallons)}</b> now. That\'s <b>$${money((n-t)*GAS.tankGallons)}</b> more per fill-up.` }, then:"$3.13", now:"$4.48 /gal", pct:43, since:true, basis:"Jan. 2025 to Sept. 2026" },
+  { icon:"coffee", name:"Ground coffee", sign:{ head:"Ground coffee", now:9.30, then:7.02, fmt:"usd", unit:"pound", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025" }, then:"$7.02", now:"$9.30 /lb", pct:32.5, since:true, basis:"Jan. 2025 to Aug. 2026" },
+  { icon:"steak", name:"Ground beef", sign:{ head:"Ground beef", now:6.92, then:5.55, fmt:"usd", unit:"pound", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025", extra:(n,t)=>`A 3-pound family pack: <b>$${money(t*3)}</b> then, <b>$${money(n*3)}</b> now.` }, then:"$5.55", now:"$6.92 /lb", pct:24.9, since:true, basis:"Jan. 2025 to Aug. 2026" },
+  { icon:"candy", name:"Candy and chocolate", sign:{ head:"Candy and chocolate" }, then:"", now:"", pct:10.8, since:true, basis:"Consumer price index, Jan. 2025 to Aug. 2026" },
+  { icon:"flame", name:"Home heating gas", sign:{ head:"Home heating gas", now:1.71, then:1.55, fmt:"usd", unit:"therm", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025" }, then:"$1.55", now:"$1.71 /therm", pct:10.4, since:true, basis:"Jan. 2025 to Aug. 2026" },
+  { icon:"bolt", name:"Electricity", sign:{ head:"Electricity", now:19.6, then:17.9, fmt:"cents", unit:"kWh", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025", extra:(n,t)=>`A 900 kWh month: <b>$${money(t*9)}</b> then, <b>$${money(n*9)}</b> now.` }, then:"17.9¢", now:"19.6¢ /kWh", pct:9.5, since:true, basis:"Jan. 2025 to Aug. 2026" },
+  { icon:"house", name:"Home and renters insurance", sign:{ head:"Home and renters insurance" }, then:"", now:"", pct:8.7, since:true, basis:"Consumer price index, Jan. 2025 to Aug. 2026" },
+  { icon:"burger", name:"Big Mac", sign:{ head:"Big Mac", now:6.12, then:5.79, fmt:"usd", unit:"burger", nowLabel:"Latest", nowSub:"The Economist, Jan. 2026", thenSub:"The Economist, Jan. 2025" }, then:"$5.79", now:"$6.12", pct:5.7, since:true, basis:"Jan. 2025 to Jan. 2026" },
+  { icon:"cart", name:"Overall inflation (CPI)", sign:{ head:"Overall inflation" }, then:"", now:"", pct:5.4, since:true, basis:"All items, Jan. 2025 to Aug. 2026" }
+];
+
+const SOURCES = [
+  ["AAA national gas price averages", "https://gasprices.aaa.com/"],
+  ["BLS average price: ground beef (FRED APU0000703112)", "https://fred.stlouisfed.org/series/APU0000703112"],
+  ["BLS average price: ground coffee (FRED APU0000717311)", "https://fred.stlouisfed.org/series/APU0000717311"],
+  ["BLS average price: electricity (FRED APU000072610)", "https://fred.stlouisfed.org/series/APU000072610"],
+  ["BLS average price: utility gas (FRED APU000072620)", "https://fred.stlouisfed.org/series/APU000072620"],
+  ["BLS CPI: candy and chewing gum (FRED CUUR0000SEFR02)", "https://fred.stlouisfed.org/series/CUUR0000SEFR02"],
+  ["BLS CPI: tenants' and household insurance (FRED CUUR0000SEHD)", "https://fred.stlouisfed.org/series/CUUR0000SEHD"],
+  ["BLS CPI: all items (FRED CPIAUCNS)", "https://fred.stlouisfed.org/series/CPIAUCNS"],
+  ["KFF / Peterson-KFF Health System Tracker, ACA premiums", "https://www.healthsystemtracker.org/brief/how-much-and-why-aca-marketplace-premiums-are-going-up-in-2027/"],
+  ["The Economist Big Mac index", "https://www.economist.com/big-mac-index"]
+];
+/* ==================================================== */
+
+const $ = id => document.getElementById(id);
+const money = n => n.toFixed(2);
+
+$("updated").textContent = "Updated " + UPDATED;
+
+// Light/dark toggle (follows the device setting until a visitor picks one; the choice is remembered)
+const root = document.documentElement;
+const sysDark = window.matchMedia("(prefers-color-scheme: dark)");
+const current = () => root.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light");
+const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
+const paintBtn = () => {
+  const dark = current() === "dark";
+  $("themeBtn").innerHTML = dark ? `${SUN}<span>Light</span>` : `${MOON}<span>Dark</span>`;
+  $("themeBtn").setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+};
+$("themeBtn").addEventListener("click", () => {
+  const next = current() === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("theme", next); } catch (e) {}
+  paintBtn();
+});
+sysDark.addEventListener && sysDark.addEventListener("change", paintBtn);
+paintBtn();
+
+// Day counter
+const start = Date.UTC(2025,0,20);
+const now = new Date();
+const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+$("dayCount").textContent = (Math.floor((today - start)/86400000) + 1).toLocaleString();
+
+// Sign: rotates daily through items up 20% or more (add #sign=1, #sign=2, ... to the URL to preview)
+const SIGN_MIN = 20;
+const POOL = ITEMS.filter(i => i.pct >= SIGN_MIN);
+const val = (v,f) => f==="cents" ? `${v.toFixed(1)}<span class="u">¢</span>` : `<span class="u">$</span>${money(v)}`;
+const plain = (v,f) => f==="cents" ? `${v.toFixed(1)}¢` : `$${money(v)}`;
+const cpi = ITEMS.find(i => i.icon === "cart");
+const daysIn = Math.floor((today - start)/86400000);
+const hashPick = parseInt((location.hash.match(/sign=(\d+)/)||[])[1], 10);
+// The sign starts on SIGN_START_ITEM on SIGN_START_DATE, then moves to the next item each day
+const SIGN_START_ITEM = "Ground beef";
+const SIGN_START_DATE = Date.UTC(2026, 8, 25); // September 25, 2026 (months count from 0)
+const startIdx = Math.max(0, POOL.findIndex(i => i.name === SIGN_START_ITEM));
+const daysSinceStart = Math.floor((today - SIGN_START_DATE) / 86400000);
+const idx = hashPick >= 1 && hashPick <= POOL.length ? hashPick - 1 : (((startIdx + daysSinceStart) % POOL.length) + POOL.length) % POOL.length;
+const pick = POOL[idx], sg = pick.sign || {};
+$("signHead").textContent = sg.head || pick.name;
+$("tank").innerHTML = "";
+if (sg.now != null) {
+  const d = sg.now - sg.then;
+  $("r1Label").textContent = sg.nowLabel || "Latest";
+  $("r1Sub").textContent = sg.nowSub || "";
+  $("r1Val").innerHTML = val(sg.now, sg.fmt);
+  $("r2Label").textContent = sg.thenLabel || "January 2025";
+  $("r2Sub").textContent = sg.thenSub || "";
+  $("r2Val").innerHTML = val(sg.then, sg.fmt);
+  $("footLabel").textContent = `Change per ${sg.unit}`;
+  $("footVal").textContent = `+${plain(d, sg.fmt)} (+${pick.pct}%)`;
+  if (sg.extra) $("tank").innerHTML = sg.extra(sg.now, sg.then);
+  $("signText").textContent = `${sg.head || pick.name}: ${plain(sg.now, sg.fmt)} per ${sg.unit} now, up from ${plain(sg.then, sg.fmt)} in January 2025, an increase of ${pick.pct} percent.`;
+} else {
+  $("r1Label").textContent = "Since January 2025";
+  $("r1Sub").textContent = pick.basis;
+  $("r1Val").innerHTML = `+${pick.pct}<span class="u">%</span>`;
+  if (pick === cpi) {
+    $("row2").style.display = "none";
+    $("footLabel").textContent = "All consumer prices combined";
+    $("footVal").textContent = "";
+  } else {
+    $("r2Label").textContent = "Overall inflation";
+    $("r2Sub").textContent = "Same period";
+    $("r2Val").innerHTML = `+${cpi.pct}<span class="u">%</span>`;
+    $("footLabel").textContent = "Compared with overall inflation";
+    $("footVal").textContent = `${(pick.pct / cpi.pct).toFixed(1)}× as fast`;
+  }
+  $("signText").textContent = `${sg.head || pick.name} is up ${pick.pct} percent since January 2025, compared with ${cpi.pct} percent overall inflation.`;
+}
+const nxt = POOL[(idx + 1) % POOL.length];
+$("nextSign").textContent = `Tomorrow on the sign: ${nxt.name}`;
+
+// Icons (simple line drawings, edit or swap freely)
+const ICONS = {
+  health:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/>',
+  pump:'<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12M7 8h4"/><path d="M14 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/>',
+  coffee:'<path d="M4 9h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/>',
+  steak:'<path d="M15.5 4C19 4 21 6.5 21 10c0 5-5 10-11 10-4 0-7-2-7-5 0-3 2.5-4 4.5-5.5C10 7.5 11.5 4 15.5 4z"/><circle cx="15" cy="10" r="2"/>',
+  candy:'<circle cx="12" cy="12" r="4"/><path d="M8 12 3 8v8zM16 12l5-4v8z"/>',
+  flame:'<path d="M12 3c1 3 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.7 1 2.5 2 3 .5-2.5 0-5.5.5-8z"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  house:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',
+  burger:'<path d="M4 10c0-3.3 3.6-6 8-6s8 2.7 8 6z"/><path d="M3 13.5h18"/><path d="M4 17h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
+  cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11l2-8H6.5"/>'
+};
+const icon = k => ICONS[k] ? `<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[k]}</svg></span>` : "";
+
+// Items
+const max = Math.max(...ITEMS.map(i => i.pct));
+const list = $("items");
+ITEMS.slice().sort((a,b) => b.pct - a.pct).forEach(i => {
+  const row = document.createElement("div");
+  const tier = i.pct > 20 ? "t3" : i.pct > 10 ? "t2" : "t1";
+  row.className = "item " + tier + (i.since ? "" : " yoy");
+  const prices = i.then && i.now ? `${i.then} → <b>${i.now}</b>` : (i.now ? `Now <b>${i.now}</b>` : "");
+  row.innerHTML = `
+    <div class="name">${icon(i.icon)}<span>${i.name}<span class="basis">${i.basis}</span></span></div>
+    <div class="prices">${prices}</div>
+    <div class="track" aria-hidden="true"><div class="fill" data-w="${(i.pct/max*100).toFixed(1)}"></div></div>
+    <div class="pct">+${i.pct}%</div>`;
+  list.appendChild(row);
+});
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%");
+}));
+
+// Ticker (list repeated twice so the scroll loops seamlessly)
+const tickItems = ITEMS.slice().sort((a,b) => b.pct - a.pct).map(i =>
+  `<span class="tick">${i.name}${i.now ? ` <b>${i.now}</b>` : ""} <em>▲ ${i.pct}%</em></span>`).join("");
+$("ticker").innerHTML = tickItems + tickItems.replace(/class="tick"/g, 'class="tick" aria-hidden="true"');
+
+// Sources
+const ul = $("sources");
+SOURCES.forEach(([t,u]) => {
+  const li = document.createElement("li");
+  li.innerHTML = `<a href="${u}" target="_blank" rel="noopener">${t}</a>`;
+  ul.appendChild(li);
+});
+</script>
+</body>
+</html>
