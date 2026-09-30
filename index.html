@@ -205,7 +205,7 @@ const GAS = {
 // since: false = latest 12-month change (dashed bar)
 const ITEMS = [
   { icon:"health", name:"Health insurance (ACA plans)", sign:{ head:"Health insurance, ACA plans" }, then:"", now:"", pct:58, since:true, basis:"Premiums paid after subsidies, 2025 plan year to 2026" },
-  { icon:"pump", name:"Gasoline", sign:{ head:"Regular unleaded", now:GAS.now, then:GAS.then, fmt:"usd3", unit:"gallon", nowLabel:"Latest", nowSub:GAS.nowDate, thenLabel:"Inauguration Day", thenSub:GAS.thenDate, extra:(n,t)=>`Filling a ${GAS.tankGallons}-gallon tank: <b>$${money(t*GAS.tankGallons)}</b> then, <b>$${money(n*GAS.tankGallons)}</b> now. That's <b>$${money((n-t)*GAS.tankGallons)}</b> more per fill-up.` }, then:"$"+GAS.then.toFixed(3), now:"$"+GAS.now.toFixed(3)+" /gal", pct:+((GAS.now-GAS.then)/GAS.then*100).toFixed(1), since:true, basis:"Jan. 20, 2025 to Sept. 2026" },
+  { icon:"pump", name:"Gasoline", sign:{ head:"Regular unleaded", now:GAS.now, then:GAS.then, fmt:"usd", unit:"gallon", nowLabel:"Latest", nowSub:GAS.nowDate, thenLabel:"Inauguration Day", thenSub:GAS.thenDate, extra:(n,t)=>`Filling a ${GAS.tankGallons}-gallon tank: <b>$${money(t*GAS.tankGallons)}</b> then, <b>$${money(n*GAS.tankGallons)}</b> now. That's <b>$${money((n-t)*GAS.tankGallons)}</b> more per fill-up.` }, then:"$"+money(GAS.then), now:"$"+money(GAS.now)+" /gal", pct:+((GAS.now-GAS.then)/GAS.then*100).toFixed(1), since:true, basis:"Jan. 20, 2025 to Sept. 2026" },
   { icon:"coffee", name:"Ground coffee", sign:{ head:"Ground coffee", now:9.30, then:7.02, fmt:"usd", unit:"pound", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025" }, then:"$7.02", now:"$9.30 /lb", pct:32.5, since:true, basis:"Jan. 2025 to Aug. 2026" },
   { icon:"steak", name:"Ground beef", sign:{ head:"Ground beef", now:6.92, then:5.55, fmt:"usd", unit:"pound", nowSub:"BLS, Aug. 2026", thenSub:"BLS, Jan. 2025", extra:(n,t)=>`A 3-pound family pack: <b>$${money(t*3)}</b> then, <b>$${money(n*3)}</b> now.` }, then:"$5.55", now:"$6.92 /lb", pct:24.9, since:true, basis:"Jan. 2025 to Aug. 2026" },
   { icon:"candy", name:"Candy and chocolate", sign:{ head:"Candy and chocolate" }, then:"", now:"", pct:10.8, since:true, basis:"Consumer price index, Jan. 2025 to Aug. 2026" },
@@ -231,7 +231,8 @@ const SOURCES = [
 /* ==================================================== */
 
 const $ = id => document.getElementById(id);
-const money = n => n.toFixed(2);
+// Rounds to cents the way people expect (4.465 -> 4.47)
+function money(n) { return (Math.round(Math.round(n * 1000) / 10) / 100).toFixed(2); }
 
 $("updated").textContent = "Updated " + UPDATED;
 
@@ -281,7 +282,7 @@ function renderAll() {
   $("tank").innerHTML = "";
   $("row2").style.display = "";
   if (sg.now != null) {
-    const d = sg.now - sg.then;
+    const d = sg.fmt === "cents" ? sg.now - sg.then : money(sg.now) - money(sg.then); // match the rounded prices shown
     $("r1Label").textContent = sg.nowLabel || "Latest";
     $("r1Sub").textContent = sg.nowSub || "";
     $("r1Val").innerHTML = val(sg.now, sg.fmt);
@@ -366,8 +367,8 @@ function applyGas(d) {
   }
   const item = ITEMS.find(i => i.icon === "pump");
   item.sign.now = GAS.now; item.sign.then = GAS.then; item.sign.nowSub = GAS.nowDate;
-  item.then = "$" + GAS.then.toFixed(3);
-  item.now = "$" + GAS.now.toFixed(3) + " /gal";
+  item.then = "$" + money(GAS.then);
+  item.now = "$" + money(GAS.now) + " /gal";
   item.pct = +((GAS.now - GAS.then) / GAS.then * 100).toFixed(1);
   if (!isNaN(dt)) item.basis = "Jan. 20, 2025 to " + dt.toLocaleDateString("en-US", { month:"short", year:"numeric" });
   return true;
